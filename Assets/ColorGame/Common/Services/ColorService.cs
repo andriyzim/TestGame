@@ -18,7 +18,6 @@ namespace ColorGame.Common.Services
         public void Initialize(List<ColorSet> colorSets)
         {
             ColorSet = colorSets;
-            SetNextColor();
         }
 
         public void SetNextColor()
@@ -39,9 +38,8 @@ namespace ColorGame.Common.Services
                 .OrderBy(_ => UnityEngine.Random.value)
                 .Take(ColorSetCount - 1)
                 .ToList();
-            
-            ColorChangedEvent?.Invoke(newCurrentColor, randomColors);
             CurrentColor = newCurrentColor.colorName;
+            ColorChangedEvent?.Invoke(newCurrentColor, randomColors);
         }
 
         public bool ColorSelected(ColorName colorName)

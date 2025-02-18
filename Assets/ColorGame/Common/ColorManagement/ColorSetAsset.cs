@@ -8,7 +8,9 @@ namespace ColorGame.Common.ColorManagement
     public class ColorSetAsset : ScriptableObject
     {
         [field: SerializeField]
-        public List<ColorSet> ColorSets { get; private set; }
+        public float DelayBeforeNextColor { get; private set; } = 1.5f;
 
+        [field: SerializeField]
+        public List<ColorSet> ColorSets { get; private set; }
     }
 }

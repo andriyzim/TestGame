@@ -1,6 +1,6 @@
-﻿using ColorGame.Common.ServiceLocator;
-using ColorGame.Common.Services.Interfaces;
+﻿using ColorGame.Common.Services.Interfaces;
 using UnityEngine;
+using Zenject;
 
 namespace ColorGame.Common.AudioController
 {
@@ -14,7 +14,9 @@ namespace ColorGame.Common.AudioController
         private AudioClip _worngAudioClip;
 
         private AudioSource _audioSource;
-        private IColorService ColorService => Service.Instance.Get<IColorService>();
+        
+        [Inject]
+        private IColorService _сolorService;
 
         private void Awake()
         {
@@ -23,15 +25,15 @@ namespace ColorGame.Common.AudioController
 
         private void OnEnable()
         {
-            ColorService.ColorSelectedEvent += ColorSelectReaction;
+            _сolorService.ColorSelectedEvent += СolorSelectReaction;
         }
 
         private void OnDisable()
         {
-            ColorService.ColorSelectedEvent += ColorSelectReaction;
+            _сolorService.ColorSelectedEvent += СolorSelectReaction;
         }
 
-        private void ColorSelectReaction(bool isCorrect)
+        private void СolorSelectReaction(bool isCorrect)
         {
             _audioSource.Stop();
             _audioSource.clip = isCorrect ? _correctAudioClip : _worngAudioClip;

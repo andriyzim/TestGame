@@ -20,10 +20,10 @@ namespace ColorGame.Common.InputManagement
                 RaycastHit hit;
                 if (Physics.Raycast(ray, out hit))
                 {
-                    IClickable clickableObject = hit.transform.gameObject.GetComponent<IClickable>();
-                    if (clickableObject != null)
+                    IInteractable interactableObject = hit.transform.gameObject.GetComponent<IInteractable>();
+                    if (interactableObject != null)
                     {
-                        clickableObject.Click();
+                        interactableObject.Interact();
                     }
                 }
             }

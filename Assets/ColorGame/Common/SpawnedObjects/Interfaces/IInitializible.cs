@@ -1,9 +1,8 @@
-﻿using ColorGame.Common.ColorManagement;
-
+﻿
 namespace ColorGame.Common.SpawnedObjects.Interfaces
 {
-    public interface IInitializible
+    public interface IInitializible<T>
     {
-        void Initialize(ColorSet colorSet);
+        void Initialize(T colorSet);
     }
 }

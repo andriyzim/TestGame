@@ -1,4 +1,4 @@
-namespace ColorGame.Common.ServiceLocator
+namespace ColorGame.Common.Services
 {
     public interface IService
     {

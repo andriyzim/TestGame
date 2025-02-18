@@ -1,40 +1,55 @@
 ﻿using ColorGame.Common.ColorManagement;
 using ColorGame.Common.InputManagement.Interfaces;
-using ColorGame.Common.ServiceLocator;
 using ColorGame.Common.Services.Interfaces;
 using ColorGame.Common.SpawnedObjects.Interfaces;
+using DG.Tweening;
 using UnityEngine;
+using Zenject;
 
 namespace ColorGame.Common.SpawnedObjects
 {
     [RequireComponent(typeof(Collider))]
     [RequireComponent(typeof(MeshRenderer))]
-    public class SpawnedObject : MonoBehaviour, IClickable, IInitializible
+    public class SpawnedObject : MonoBehaviour, IInteractable, IInitializible<Vector3>
     {
-        [SerializeField]
+        public class  Factory : PlaceholderFactory<SpawnedObject>
+        {
+            
+        }
         
+        private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
+        private const float AnimationDurationNegative = 1f;
+        private const float AnimationDurationPositive = 0.5f;
+        private const float PunchScale = 0.2f;
+        private const float RotationStrength = 2f;
+        private const int PunchVibrato = 2;
+
         private ColorName _myColorName;
         private MeshRenderer _meshRenderer;
+        private MaterialPropertyBlock _materialPropertyBlock;
         private bool _isClickable;
-        private IColorService ColorService => Service.Instance.Get<IColorService>();
-        private MeshRenderer MeshRenderer =>_meshRenderer ??= GetComponent<MeshRenderer>();
-
        
+        private MeshRenderer MeshRenderer => _meshRenderer ??= GetComponent<MeshRenderer>();
 
-        public void Initialize(ColorSet colorSet)
+        private MaterialPropertyBlock MaterialPropertyBlock =>
+            _materialPropertyBlock ??= _materialPropertyBlock = new MaterialPropertyBlock();
+
+        [Inject]
+        private IColorService _colorService;
+
+        public void Initialize(Vector3 targetPosition)
         {
-            _myColorName = colorSet.colorName;
-            MeshRenderer.material.color = colorSet.Color;
+            transform.DOMove(targetPosition, AnimationDurationNegative).SetEase(Ease.OutBounce);
         }
 
-        public void Click()
+        public void Interact()
         {
             if (!_isClickable)
             {
                 return;
             }
 
-            if (ColorService.ColorSelected(colorName: _myColorName))
+            if (_colorService.ColorSelected(colorName: _myColorName))
             {
                 DoPositiveAction();
             }
@@ -49,14 +64,23 @@ namespace ColorGame.Common.SpawnedObjects
             _isClickable = isClickable;
         }
 
+        public void ChangeColor(ColorSet colorSet)
+        {
+            _myColorName = colorSet.colorName;
+            MeshRenderer.GetPropertyBlock(MaterialPropertyBlock);
+            MaterialPropertyBlock.SetColor(BaseColor, colorSet.Color);
+            MeshRenderer.SetPropertyBlock(MaterialPropertyBlock);
+        }
+
         private void DoPositiveAction()
         {
-            Debug.Log("PositiveAction {}");
+            transform.DOPunchScale(Vector3.one * PunchScale, AnimationDurationPositive, PunchVibrato);
         }
 
         private void DoNegativeAction()
         {
-            Debug.Log("NegativeAction");
+            transform.DOShakeRotation(AnimationDurationNegative, Vector3.one * RotationStrength,
+                randomnessMode: ShakeRandomnessMode.Harmonic);
         }
     }
 }
