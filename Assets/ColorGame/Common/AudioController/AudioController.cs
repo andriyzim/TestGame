@@ -30,7 +30,7 @@ namespace ColorGame.Common.AudioController
 
         private void OnDisable()
         {
-            _сolorService.ColorSelectedEvent += СolorSelectReaction;
+            _сolorService.ColorSelectedEvent -= СolorSelectReaction;
         }
 
         private void СolorSelectReaction(bool isCorrect)
